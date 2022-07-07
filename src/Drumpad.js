@@ -73,6 +73,7 @@ const drumInfo = [
         keyBind={padInfoArr[i].keyBind}
         clipID={padInfoArr[i].id} 
         clipSrc={padInfoArr[i].url} 
+        keyCode={padInfoArr[i].keyCode}
         />
       )
     });
@@ -85,12 +86,28 @@ const drumInfo = [
     constructor(props){
       super(props);
       this.playSound = this.playSound.bind(this);
+      this.handleKeyPress = this.handleKeyPress.bind(this);
     };
    
+    componentDidMount(){
+      document.addEventListener('keydown',this.handleKeyPress);
+    };
+
+    componentWillUnmount() {
+      document.removeEventListener('keydown',this.handleKeyPress);
+    };
+
+    handleKeyPress(event) {
+      if (event.keyCode === this.props.keyCode) {
+        this.playSound();
+      }
+    };
+
     playSound () {
       const sound = document.getElementById(this.props.keyBind);
+      sound.currentTime = 0; /* this lets you spam sounds */
       sound.play();
-    }
+    };
 
     render () {
       return (
