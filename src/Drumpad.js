@@ -60,28 +60,6 @@ const drumInfo = [
     }
   ];
   
-  class PadApp extends React.Component {
-    constructor(props){
-      super(props);
-    };
-  
-  render() {
-    let padCell;
-    padCell = drumInfo.map((drumObj, i, padInfoArr) => {
-      return (
-        <Pad 
-        keyBind={padInfoArr[i].keyBind}
-        clipID={padInfoArr[i].id} 
-        clipSrc={padInfoArr[i].url} 
-        keyCode={padInfoArr[i].keyCode}
-        />
-      )
-    });
-    
-    return <div>{padCell}</div>;
-  }  
-  }
-  
   class Pad extends React.Component {
     constructor(props){
       super(props);
@@ -107,6 +85,7 @@ const drumInfo = [
       const sound = document.getElementById(this.props.keyBind);
       sound.currentTime = 0; /* this lets you spam sounds */
       sound.play();
+      this.props.updateDisplay(this.props.clipID);
     };
 
     render () {
@@ -124,8 +103,58 @@ const drumInfo = [
           {this.props.keyBind}
         </div>
       );
-    }
-    
+    } 
   };
 
-  export default PadApp;
+  class PadApp extends React.Component {
+    constructor(props){
+      super(props);
+    };
+  
+  render() {
+    let padCell;
+    padCell = drumInfo.map((drumObj, i, padInfoArr) => {
+      return (
+        <Pad 
+        keyBind={padInfoArr[i].keyBind}
+        clipID={padInfoArr[i].id} 
+        clipSrc={padInfoArr[i].url} 
+        keyCode={padInfoArr[i].keyCode}
+        updateDisplay={this.props.updateDisplay}
+        />
+      )
+    });
+    
+    return <div>{padCell}</div>;
+  }  
+  }
+
+
+  class Machine extends React.Component {
+    constructor(props){
+      super(props);
+      this.state = {
+        display: "blank"
+      };
+      this.changeDisplay = this.changeDisplay.bind(this);
+    };
+
+    changeDisplay(name){ /*this gets passed down as a function to the individual drum pads as a prop*/
+      this.setState({
+        display: name
+      });
+    };
+
+    render () {
+      return (
+        <div class='inner-container' id="drum-machine">
+          <PadApp 
+          updateDisplay={this.changeDisplay}
+          />
+          <p id='display'>{this.state.display}</p>
+        </div>
+
+      )
+    }
+  }
+  export default Machine;
